@@ -1,0 +1,19 @@
+services: 
+  storage:
+    image: redis
+    volumes:
+      - ./data:/data
+  counter:
+    image: node:19.8
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports: 
+      - 80:8989
+    environment: 
+      - PORT=8989
+      - REDIS_URL=redis://storage
+    command: npm run server
+    depends_on:
+      - storage
+      

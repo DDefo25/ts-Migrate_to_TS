@@ -4,16 +4,24 @@ services:
     volumes:
       - ./data:/data
   counter:
-    image: node:19.8
+    image: ddefo25/counter:1.0.0
+    environment: 
+      - PORT=8888
+      - REDIS_URL=redis://storage
+    expose:
+      - 8888
+    depends_on:
+      - storage
+  library:
+    build: ./library
     volumes:
-      - .:/app
-    working_dir: /app
+      - ./library/books:/app/books
     ports: 
       - 80:8989
     environment: 
       - PORT=8989
-      - REDIS_URL=redis://storage
-    command: npm run server
+      - COUNTER_URL=http://counter:8888/counter
+      - BOOKS_DIR=/app
     depends_on:
-      - storage
+      - counter
       

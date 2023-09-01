@@ -1,0 +1,15 @@
+services: 
+  storage:
+    image: redis
+    volumes:
+      - ./data:/data
+  counter:
+    image: ddefo25/counter:1.0.0
+    ports: 
+      - 8888:8888
+    environment: 
+      - PORT=8888
+      - REDIS_URL=redis://storage
+    depends_on:
+      - storage
+      

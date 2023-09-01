@@ -6,7 +6,7 @@ yarn-debug.log*
 yarn-error.log*
 
 #Архив книг
-booksStorage
+books
 
 # Runtime data
 pids

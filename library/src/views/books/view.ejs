@@ -27,5 +27,12 @@
     </div>
 </div>
 
+<form class="input-group mb-3 mt-3" id="commentary-form">
+    <input type="text" class="form-control commentary-input" id="commentary-input" placeholder="Комментарий" aria-label="Комментарий" aria-describedby="button-addon2">
+    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Отправить</button>
+</form>
 
-<%- include('../port/layoutEnd') %>
+<ul class="list-group" id="commentary-messages"></ul>
+
+
+<%- include('../port/layoutEndBook', {bookId: book.id}) %>

@@ -4,7 +4,7 @@
 <h1><%= book.title %></h1>
 
 <div class="row">
-    <div class="col-sm-8">
+    <div class="col-6">
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title"><%= book.authors %></h5>
@@ -13,11 +13,11 @@
 
                 <div class="text-right">
                     <a class="btn btn-sm btn-primary" href="./update/<%= book.id %>">
-                        <i class="fa fa-pencil" aria-hidden="true"></i>
+                        <i class="bi bi-pencil"></i>
                     </a>
                     <form action="./delete/<%= book.id %>" class="d-inline">
                         <button class="btn btn-sm btn-danger">
-                            <i class="fa fa-trash" aria-hidden="true"></i>
+                            <i class="bi bi-trash3"></i>
                         </button>
                     </form>
                 </div>
@@ -25,14 +25,82 @@
             </div>
         </div>
     </div>
+    <div class="col-6">
+        <form class="input-group mb-3 row" id="comment-form">
+            <div class="input-group">
+                <input type="text" class="form-control comment-input" id="comment-name" placeholder="Имя" aria-label="Имя" aria-describedby="button-addon2" required>
+                <button class="btn btn-sm btn-primary" type="submit" id="button-addon2"><i class="bi bi-send-fill"></i></button>
+            </div>
+            <div>
+                <textarea type="text mb-1" class="form-control comment-input" id="comment-input" placeholder="Комментарий" aria-label="Комментарий" aria-describedby="button-addon2" required></textarea>
+            </div>
+        </form>
+        <div class="row">
+            <ul class="list-group" id="comment-messages">
+                <% comments.map((el) => {  %>
+                    <li class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h4 class="mb-1"><%= el.name %></h4>
+                            <% const locale = Intl.DateTimeFormat().resolvedOptions(); %>
+                            <small><%= new Date(el.date).toLocaleString(locale.locale, { timeZone: locale.timeZone })  %></small>
+                        </div>
+                        <p class="mb-1">
+                            <%= el.text %>
+                        </p>
+                    </li>
+                <% }) %>
+            </ul>
+        </div>
+    </div>
 </div>
 
-<form class="input-group mb-3 mt-3" id="commentary-form">
-    <input type="text" class="form-control commentary-input" id="commentary-input" placeholder="Комментарий" aria-label="Комментарий" aria-describedby="button-addon2">
-    <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Отправить</button>
-</form>
-
-<ul class="list-group" id="commentary-messages"></ul>
 
 
-<%- include('../port/layoutEndBook', {bookId: book.id}) %>
+
+
+<script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+<script> 
+    const socket = io('/', {query: `bookId=<%= book.id %>`});
+    const form = document.querySelector('#comment-form');
+    const name = document.querySelector('#comment-name');
+    const input = document.querySelector('#comment-input');
+    const messages = document.querySelector('#comment-messages');
+
+    const createElComment = (comment) => {
+        const el = document.createElement('li');
+        const locale = Intl.DateTimeFormat().resolvedOptions();
+        el.classList = 'list-group-item';
+        el.innerHTML = `
+            <div class="d-flex w-100 justify-content-between">
+                <h4 class='mb-1'>${comment.name}</h4>
+                <small>${new Date(comment.date).toLocaleString(locale.locale, { timeZone: locale.timeZone })}</small>
+            </div>
+            <p class="mb-1">${comment.text}</p>`;
+        return el;
+    }
+
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        if (input.value) {
+            socket.emit('comment message', {text: input.value, name: name.value});
+            input.value = '';
+            name.value = ''
+        }
+    };
+
+    socket.on('comment message', (comment) => {
+        const el = document.createElement('li');
+        const locale = Intl.DateTimeFormat().resolvedOptions();
+        el.classList = 'list-group-item';
+        el.innerHTML = `
+            <div class="d-flex w-100 justify-content-between">
+                <h4 class='mb-1'>${comment.name}</h4>
+                <small>${new Date(comment.date).toLocaleString(locale.locale, { timeZone: locale.timeZone })}</small>
+            </div>
+            <p class="mb-1">${comment.text}</p>`;
+        messages.appendChild( el );
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+</script>
+
+<%- include('../port/layoutEnd') %>

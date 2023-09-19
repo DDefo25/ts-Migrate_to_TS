@@ -1,5 +1,5 @@
 const { v4: uuid } = require('uuid');
-const Book = require('./Book');
+const Book = require('./model/Book')
 
 class Library {
   constructor() {
@@ -7,42 +7,50 @@ class Library {
     this.buffer = [];
   }
 
-  add(data) {
+  async add(data) {
     const newBook = new Book(data);
-    this.buffer.push(newBook);
-
-    return newBook;
-  }
-
-  get(id) {
-    const book = this.buffer.find((b) => b.id === id);
-    if (book === undefined) throw new Error('Книга не найдена в библиотеке');
-    return book;
-  }
-
-  getAll() {
-    return this.buffer;
-  }
-
-  update(id, params) {
-    const book = this.buffer.find((b) => b.id === id);
-    if (book === undefined) throw new Error('Книга не найдена в библиотеке');
-
-    for (const [key, value] of Object.entries(params)) {
-      if (book[key] === undefined) {
-        throw new Error('Передано некорректное название параметра книги');
-      }
-
-      book[key] = value;
+    try {
+      await newBook.save()
+      return newBook;
+    } catch (e) {
+      return e;
     }
-
-    return book;
   }
 
-  remove(id) {
-    const idx = this.buffer.findIndex((b) => b.id === id);
-    if (idx === -1) throw new Error('Книга не найдена в библиотеке');
-    this.buffer.splice(idx, 1);
+  async get(id) {
+    try {
+      const book = await Book.findById(id).select('-__v');
+      return book;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async getAll() {
+    try {
+      const books = await Book.find().select('-__v');
+      return books;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async update(id, params) {
+    try {
+      await Book.findByIdAndUpdate(id, params)
+      return book;
+    } catch (e) {
+      return e;
+    }
+  }
+
+  async remove(id) {
+    try {
+      await Book.deleteOne({_id: id})
+      return book;
+    } catch (e) {
+      return e;
+    }
   }
 }
 

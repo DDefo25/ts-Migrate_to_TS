@@ -1,20 +1,24 @@
 const express = require('express');
-const Library = require('../Library');
 const config = require('../config');
 const file = require('../middleware/file');
-const { error404Custom } = require('./error');
+const error404Custom = require('./error');
+const _ = require('lodash')
 
 const router = express.Router();
+
+const Library = require('../Library');
 const library = new Library();
 
-const counterURL = config.COUNTER_URL || 'http://counter:8888/counter'
-const bookDir = config.BOOKs_DIR || '/app'
+const Comment = require('../model/Comment');
+
+const COUNTER_URL = config.COUNTER_URL || 'http://counter:8888/counter'
+const BOOKS_DIR = config.BOOKS_DIR || '/app'
 
 router.get('/', async (req, res) => {
-  const books = library.getAll();
+  const books = await library.getAll();
   const getView = books => {
     return Promise.all(books.map(async book => {
-      const response = await fetch(`${counterURL}/${book.id}`);
+      const response = await fetch(`${COUNTER_URL}/${book.id}`);
       const view = await response.json();
       book.view = view.rep || 0;
       return book;
@@ -26,7 +30,7 @@ router.get('/', async (req, res) => {
       library: result,
     });
   }).catch((err) => {
-    error404Custom(err);
+    error404Custom(err, req, res);
   });
 
 });
@@ -43,9 +47,9 @@ router.route('/create')
       book: {},
     });
   })
-  .post(fileFields, (req, res) => {
+  .post(fileFields, async (req, res) => {
     const data = req.body;
-    if (req.files) {
+    if (!_.isEmpty(req.files)) {
       const { fileBook, fileCover } = req.files;
       data.fileBook = fileBook[0].path;
       data.fileName = fileBook[0].filename;
@@ -53,7 +57,7 @@ router.route('/create')
     }
 
     try {
-      library.add(data)
+      await library.add(data)
       res.redirect('..');
     } catch (error) {
       error404Custom(error, req, res);
@@ -63,23 +67,24 @@ router.route('/create')
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    await fetch(`${counterURL}/${id}/incr`, {
+    await fetch(`${COUNTER_URL}/${id}/incr`, {
       method: "POST",
     });
     res.render('books/view', {
       title: 'Книга',
-      book: library.get(id)
+      book: await library.get(id),
+      comments: await Comment.find({ bookId: id }).select('-__v')
     });
   } catch (error) {
     error404Custom(error, req, res);
   }
 });
 
-router.get('/:id/download/:fileType', (req, res) => {
+router.get('/:id/download/:fileType', async (req, res) => {
   const { id, fileType } = req.params;
   try {
-    const book = library.get(id);
-    res.download(`${bookDir}/${book[fileType]}`, book[fileType], (err) => {
+    const book = await library.get(id);
+    res.download(`${BOOKS_DIR}/${book[fileType]}`, book[fileType], (err) => {
       if (err) {
         error404Custom(err, req, res);
       }
@@ -90,23 +95,22 @@ router.get('/:id/download/:fileType', (req, res) => {
 });
 
 router.route('/update/:id')
-  .get((req, res) => {
+  .get(async (req, res) => {
     const { id } = req.params;
-
     try {
       res.render('books/update', {
         title: 'Книга | редактирование',
-        book: library.get(id),
+        book: await library.get(id),
       });
     } catch (error) {
       error404Custom(error, req, res);
     }
   })
-  .post(fileFields, (req, res) => {
+  .post(fileFields, async (req, res) => {
     const data = req.body;
     const { id } = req.params;
 
-    if (req.files) {
+    if (!_.isEmpty(req.files)) {
       const { fileBook, fileCover } = req.files;
       data.fileBook = fileBook[0].path;
       data.fileName = fileBook[0].filename;
@@ -114,7 +118,7 @@ router.route('/update/:id')
     }
 
     try {
-      library.update(id, data);
+      await library.update(id, data);
       res.redirect('/api/books/');
     } catch (error) {
       error404Custom(error, req, res);

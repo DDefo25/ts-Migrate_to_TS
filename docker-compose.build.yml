@@ -3,6 +3,7 @@ services:
     image: redis
     volumes:
       - ./data:/data
+
   counter:
     image: ddefo25/counter:1.0.0
     environment: 
@@ -12,6 +13,28 @@ services:
       - 8888
     depends_on:
       - storage
+
+  mongo:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+    ports:
+      - 27017:27017
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    ports:
+      - 8081:8081
+    volumes:
+      - ./data/db:/data/db
+    environment:
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: pass
+      ME_CONFIG_MONGODB_URL: mongodb://root:pass@mongo:27017/
+      
   library:
     build: ./library
     volumes:
@@ -22,6 +45,7 @@ services:
       - PORT=8989
       - COUNTER_URL=http://counter:8888/counter
       - BOOKS_DIR=/app
+      - MONGO_URL=mongodb://root:pass@mongo:27017
     depends_on:
       - counter
       

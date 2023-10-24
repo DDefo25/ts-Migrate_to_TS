@@ -6,10 +6,12 @@ const _ = require('lodash')
 
 const router = express.Router();
 
-const Library = require('../Library');
-const library = new Library();
-
 const Comment = require('../model/Comment');
+
+const { container } = require('../db/inversify.config');
+const { TYPES } = require('../db/types/types');
+
+const library = container.get(TYPES.BooksRepository);
 
 const COUNTER_URL = config.COUNTER_URL || 'http://counter:8888/counter'
 const BOOKS_DIR = config.BOOKS_DIR || '/app'

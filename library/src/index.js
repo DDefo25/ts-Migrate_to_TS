@@ -34,7 +34,7 @@ app.use(error404);
 
 (async function (PORT, MONGO_URL) {
     try {
-        await mongoose.connect(MONGO_URL);
+        await mongoose.connect(MONGO_URL, {dbName: 'library'});
         server.listen(PORT);
         console.log('server is listening: ' + PORT);
     } catch (e) {

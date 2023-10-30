@@ -7,8 +7,11 @@ export interface IBook {
     favorite?: string,
     fileCover?: string,
     fileName?: string,
-    fileBook?: string
-  }
-  
+    fileBook?: string,
+    views: number,
+
+    incViews(): Promise<void>,
+}
+
 export interface IBookDocument extends IBook, Document { } 
 export interface IBookModel extends Model<IBookDocument> { }

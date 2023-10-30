@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.container = void 0;
+var inversify_1 = require("inversify");
+var Repository_1 = require("../db/entities/Repository/Repository");
+var types_1 = require("../db/types/types");
+var Book_model_1 = require("../db/entities/Book/Book.model");
+var Comment_model_1 = require("../db/entities/Comment/Comment.model");
+var container = new inversify_1.Container();
+exports.container = container;
+container.bind(types_1.TYPES.BooksRepository).to(Repository_1.BooksRepository).inSingletonScope();
+container.bind(types_1.TYPES.CommentsRepository).to(Repository_1.CommentsRepository).inSingletonScope();
+container.bind(types_1.TYPES.BookModel).toConstantValue(Book_model_1.BookModel);
+container.bind(types_1.TYPES.CommentModel).toConstantValue(Comment_model_1.CommentModel);

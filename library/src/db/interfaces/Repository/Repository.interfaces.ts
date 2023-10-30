@@ -3,9 +3,10 @@ export type Query<T> = {
 };
 
 export interface IRepository<T> {
-    add(doc: T): Awaited< Promise<T>> | unknown,
-    get(id: string): Awaited< Promise<T>> | unknown,
-    getAll(): Awaited< Promise< Array<T>>> | unknown, 
-    update(id: string, doc: Query<T>):  Awaited< Promise< Array<T>>> | unknown,
-    remove(id: string): Awaited< Promise< T>> | unknown,
+    add(doc: T): Promise<T>,
+    get(id: string): Promise<T | null>,
+    getAll(): Promise<T[]>,
+    getAllByKey(key: string, value: string): Promise<T[]>, 
+    update(id: string, doc: Query<T>):  Promise<T | null>,
+    remove(id: string): Promise<T | null>,
 }

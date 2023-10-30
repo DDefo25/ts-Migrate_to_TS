@@ -1,4 +1,7 @@
-const TYPES = {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TYPES = void 0;
+var TYPES = {
     App: Symbol("App"),
     DBClient: Symbol('DBClient'),
     IOServer: Symbol('IOServer'),
@@ -7,5 +10,4 @@ const TYPES = {
     CommentModel: Symbol('BookModel'),
     CommentsRepository: Symbol('CommentsRepository')
 };
-
-export { TYPES };
+exports.TYPES = TYPES;

@@ -1,6 +1,6 @@
-import {Schema} from "mongoose"; 
+import {Schema} from "mongoose";
 
-export const BookSchema = new Schema({
+const BookSchema = new Schema({
     title: {
         type: String,
         required: true,
@@ -29,4 +29,17 @@ export const BookSchema = new Schema({
         type: String,
         default: '',
     },
+    views: {
+        type: Number,
+        default: 0
+    },
 })
+
+BookSchema.methods = {
+    async incViews(): Promise<void> {
+            this.$inc('views');
+            await this.save();
+    }
+}
+
+export { BookSchema }

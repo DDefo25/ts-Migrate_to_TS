@@ -1,19 +1,4 @@
 services: 
-  storage:
-    image: redis
-    volumes:
-      - ./data:/data
-
-  counter:
-    image: ddefo25/counter:1.0.0
-    environment: 
-      - PORT=8888
-      - REDIS_URL=redis://storage
-    expose:
-      - 8888
-    depends_on:
-      - storage
-
   mongo:
     image: mongo
     restart: always
@@ -43,9 +28,9 @@ services:
       - 80:8989
     environment: 
       - PORT=8989
-      - COUNTER_URL=http://counter:8888/counter
       - BOOKS_DIR=/app
-      - MONGO_URL=mongodb://root:pass@mongo:27017
-    depends_on:
-      - counter
+      - MONGO_URL=mongo
+      - MONGO_PORT=27017
+      - MONGO_USER=root
+      - MONGO_PASSWORD=pass      
       

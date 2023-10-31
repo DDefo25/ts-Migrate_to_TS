@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY ./package*.json ./
 RUN npm install
-COPY ./dist dist/
+COPY ./src src/
+COPY ["gulpfile*.mjs", "tsconfig*.json", "./"]
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev:gulp"]

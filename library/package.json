@@ -6,7 +6,10 @@
     "dev": "nodemon -r dotenv/config ./dist/index.js",
     "start": "node ./dist/index.js",
     "lint": "eslint .",
-    "build": "echo This is a static template, there is no bundler or bundling involved!"
+    "build": "echo This is a static template, there is no bundler or bundling involved!",
+    "gulp": "gulp",
+    "start:gulp": "npm-run-all gulp start",
+    "dev:gulp": "nodemon --watch src -e ts,ejs --exec npm run start:gulp"
   },
   "repository": {
     "type": "git",
@@ -32,11 +35,16 @@
     "uuid": "^9.0.0"
   },
   "devDependencies": {
+    "@types/lodash": "^4.14.200",
     "@types/multer": "^1.4.9",
     "@types/socket.io": "^3.0.2",
+    "del": "^7.1.0",
     "eslint": "^8.36.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.27.5",
-    "nodemon": "^2.0.20"
+    "gulp": "^4.0.2",
+    "gulp-typescript": "^6.0.0-alpha.1",
+    "nodemon": "^2.0.20",
+    "npm-run-all": "^4.1.5"
   }
 }
